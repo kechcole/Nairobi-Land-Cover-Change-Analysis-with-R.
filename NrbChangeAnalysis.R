@@ -75,7 +75,7 @@ plot(selected_bands)
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank())+
   ggtitle("Natural Color\n (R= Red, G= Green, B= Blue)")
-trueColour
+naturalColour
 
 # 2.Colour infrared image is used for analysing vegetation. Vegetation have higher reflectance 
  # for NIR light, vegetative areas appear red while water which absorbs this band appears dark 
@@ -107,5 +107,75 @@ falseColourUrb
  
  
  # Agriculture 
+ # This band combination uses SWIR-1 (6), near-infrared (5), and blue (2). It’s commonly used for crop monitoring 
+ # because of the use of short-wave and near-infrared. Healthy vegetation appears dark green. But bare earth 
+ # has a magenta hue.
+ agric <- ggRGB(landsat_24, r=6, g=5, b=2, stretch = "lin")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  ggtitle("agriculture \n (R= SWIR1, G= NIR,  B= Green)")
+agric
 
+ 
+ # Plot all data together 
+grid.arrange(naturalColour, falseColourVeg, falseColourUrb, agric, nrow = 1)
 
+ 
+ 
+ 
+ '''              Pansharpening. 
+It involves improving resolution of a multispectral-image using the panchromatic band. 
+The panchromatic band has a high resolution if 15m as compared to other imgaes with 30m. 
+The other bands can be "sharpened" using this band resulting to better quality images. 
+this will use panSharpen() function in RSToolbox package on three channel RGB images.
+'''
+ # Load data 
+landsat_2022 <- stack("c:/Users/admin/Downloads/Nairobi Landsat data/Landsat8_2022.tif") 
+ panBand_2022 <- raster("c:/Users/admin/Downloads/Nairobi Landsat data/Landsat8_Panchromatic_2022.tif")
+
+ landsat_2022
+ panBand_2022
+
+ # Stack band 432 and rename them, remember we dont have B1 thus use 321
+ rgb_stack2022 <- stack(landsat_2022[[3]], landsat_2022[[2]], landsat_2022[[1]])
+ names(rgb_stack2022) <- c('Red', 'Green', 'Blue')
+ rgb_stack2022
+
+ # Plot rgb 
+ trueColour2022 <- ggRGB(rgb_stack2022, r=1, g=2, b=3, stretch = "lin")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  ggtitle("True Colour Image 2022 \n (R= red, G= green,  B= blue)")
+trueColour2022
+ 
+ # Pansharpen stack above 
+ rgb_pan <- panSharpen(rgb_stack2022,    # Image to be pansharpend
+                       panBand_2022,     # pansharpening band 
+                       r = "layer.1", 
+                       g = "layer.2",
+                       b = "layer.3", 
+                       method = "pca",  # Use principle component analysis 
+                       norm=TRUE)
+
+# Plot pansharpened image 
+pansharpened <- ggRGB(rgb_pan, stretch = "lin")+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  ggtitle("Pansharpened 2022 Image \n Principal Component Analysis. ")
+pansharpened 
+ 
+ 
+ 
+ 
