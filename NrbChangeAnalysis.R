@@ -159,7 +159,7 @@ trueColour2022
  # Pansharpen stack above 
  rgb_pan <- panSharpen(rgb_stack2022,    # Image to be pansharpend
                        panBand_2022,     # pansharpening band 
-                       r = "layer.1", 
+                       r = "layer.1",    # Layer refers to rgb stack 
                        g = "layer.2",
                        b = "layer.3", 
                        method = "pca",  # Use principle component analysis 
