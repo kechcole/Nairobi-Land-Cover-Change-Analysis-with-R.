@@ -50,6 +50,7 @@ as in may require expert knowledge to interpret.
 #                    Section 1 : UNSUPERVISED CLASSIFICATION.
 #----------------------------------------------------------------------------------
 
+# Load Libraries 
 library(raster)      # raster data
 library(rasterVis)  # raster visualisation  
 library(sp)         # Spatial data processing           
@@ -58,32 +59,40 @@ library(RStoolbox)  # Image analysis
 library(ggplot2)    # ploting
 
 
+# Load multiband raster data 
+dataFolder <- "c:/Users/admin/Downloads/Nairobi Landsat data/"
+landsat_2023 <- stack(paste0(dataFolder, 'NAIROBI_L8_2023.tif'))
 
+# Confirm multiband 
+landsat_2023
 
+# K-means Clustering using 8 classes. 
 
+# Set seed for easy duplication
+set.seed(4)
 
+# Run algorithm 
+unsupClass_08 <- unsuperClass(landsat_2023,      # raster image
+                        nSamples = 100,   # Number of random samples to draw to fit cluster map 
+                        nClasses= 8,      # Number of classes  
+                        nStarts = 5)      # Number of random starts for kmeans algorithm
 
+# Plot map 
+colours <- colorRampPalette(c("white", "dark grey", "darkgreen","green", "light blue", "yellow", "red", "blue", "magnenta"))
+spplot(unsupClass_08$map,    # Object 
+      main="Unsupervised K-Classificantion with 8 Classes" ,   # Tilte  
+      # Legend apperance and behaviour 
+      colorkey = list(space="right",    # Position 
+                      tick.number=1,height=1, width=1,  # Size 
+                      # cex controls text label size, 
+                      labels = list(at = 1:8, labels = paste("Class", 1:8), cex = 1.2)),
+      col.regions=terrain.colors(8), 
+      cut=7)  # 7 intervals has 8 classes 
 
+# Save the image on disk 
+writeRaster(unsupClass_08$map, filename=paste0(dataFolder, 'Unsup_Kmeans.tif'), format="GTiff", overwrite=TRUE)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(paste0(dataFolder, 'Unsup_Kmeans.tif'))
 
 
 
