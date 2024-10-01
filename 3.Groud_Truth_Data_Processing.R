@@ -23,44 +23,57 @@ crs(landsat_24)
 
 
 # Load geopackage using sf package , layer is train_2023
-polygon <- st_read(paste0(dataFolder, 'Nairobidata.gpkg'))
+polygon_layers <- st_layers(paste0(dataFolder, 'Nairobidata.gpkg'))
+polygon_layers
 
+# Load a single layer 
+polygon1 <- st_read(paste0(dataFolder, 'Nairobidata.gpkg'), layer = 'dissolved')
 
 # CRS 
-crs(polygon)
+crs(polygon1)
 
 # Reproject to Pseudo Mercator, projected coordinate system that uses meters 
-poly_rep <- st_transform(polygon, crs=3857) 
+poly_rep <- st_transform(polygon1, crs=3857) 
 poly_rep
 
+# Choose attribute 
+attribute <- poly_rep$Class_Name 
+
+# Plot
+plot(poly_rep["Class_Name"], col = terrain.colors(length(unique(attribute))), 
+     main = "Plot Colored by Land Type.")
+
+# Add a legend
+legend("bottomright", legend = unique(attribute), 
+        fill = terrain.colors(length(unique(attribute))), title = "Legend", cex = 0.8)
+
+
+
+
+# ------------------------------------------------------
+# Convert Polygon to raster
+
+# Get extent from raster 
+extent <- extent(landsat_24)
+extent
+
+# Get projection of polygon to be used in rasterisation 
+crs = st_crs(poly_rep)$proj4string
+crs
+
+# Create a blank raster (define resolution and extent)
+# Define the raster resolution (in the units of the coordinate system)
+rast_template <- raster(extent, resolution=2.5, crs = crs)
+
+# Assign the extent of reprojected polygon to raster template 
+extent(rast_template) <- extent(poly_rep)
+
+# Rasterize the polygon based on an attribute
+# Choose the attribute for rasterization MUST be a numeric function
+rp <- rasterize(poly_rep, rast_template, 'Class_ID', fun = "first")
+
 # Plot 
-plot(st_geometry(poly_rep), axes=TRUE)
+plot(rp, main="Ground truth data")
 
-
-
-#--------------------------------------------------
-# Dissolve based on class id 
-
-dissolve_by_class_id_sf <- function(input_layer, class_id_column) {
-  # Check if input is an sf object
-  if (!inherits(input_layer, "sf")) {
-    stop("Input layer must be an sf object")
-  }
-  
-  # Ensure the class_id_column exists in the input layer
-  if (!(class_id_column %in% colnames(input_layer))) {
-    stop("class_id_column does not exist in the input layer")
-  }
-
-  # Dissolve by class_id using st_union
-  dissolved_layer <- input_layer %>%
-    split(.[[class_id_column]]) %>%       # Split by the class_id column
-    lapply(st_union) %>%                  # Apply st_union to dissolve
-    do.call(what = st_sfc) %>%            # Combine into a single sfc object
-    st_sf(class_id = unique(input_layer[[class_id_column]]))  # Create sf object with class_id
-  
-  return(dissolved_layer)
-}
-poly_dis <- dissolve_by_class_id_sf(poly_rep, "Class_ID")
 
 
