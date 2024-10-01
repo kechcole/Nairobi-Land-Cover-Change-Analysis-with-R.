@@ -20,6 +20,15 @@ dataFolder <- "c:/Users/admin/Downloads/Nairobi Landsat data/"
 # Load raster data 
 landsat_24 <- stack(paste0(dataFolder, 'NAIROBI_L8_2023.tif'))
 crs(landsat_24)
+plot(landsat_24)
+
+# Reproject raster 
+# You can use an EPSG code (32337 for UTM Zone 37S, WGS 84 datum) or a proj4string
+target_crs <- CRS("+proj=utm +zone=37 +datum=WGS84 +units=m +no_defs")
+
+# Step 3: Reproject the raster
+landsat_rpUTM <- projectRaster(landsat_24, crs = target_crs)
+plot(landsat_rpUTM)
 
 
 # Load geopackage using sf package , layer is train_2023
