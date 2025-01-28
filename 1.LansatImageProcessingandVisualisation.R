@@ -2,7 +2,7 @@
  Author : Collins Kechir
  Date Updated : 29/01/2024
 
- 
+
 LAND COVER CHANGE ANALYSIS IN THE GREATER NAROBI METROPOLITAN AREA. 
 
 A landsat 8 image of the greater Nairobi region was acquired from google earth engine 
@@ -46,7 +46,7 @@ library(gridExtra)   # plot arrangement
  
 # Load raster data and study properties 
 # ---------------------------------------------------- 
-landsat_24 <- stack("c:/Users/admin/Downloads/Nairobi Landsat data/NAIROBI_L8_2023.tif")
+landsat_24 <- stack("E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/NAIROBI_L8_2023.tif")
 
 # Attributes of the whole image  
 landsat_24
