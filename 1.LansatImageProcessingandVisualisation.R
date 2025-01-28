@@ -1,7 +1,11 @@
  '''
+ Author : Collins Kechir
+ Date Updated : 29/01/2024
+
+ 
 LAND COVER CHANGE ANALYSIS IN THE GREATER NAROBI METROPOLITAN AREA. 
 
-A landsat 8 image of the greater Nairobi region was acquire from google earth engine 
+A landsat 8 image of the greater Nairobi region was acquired from google earth engine 
 for the years 2013, 2018, and 2023. 
 
 
