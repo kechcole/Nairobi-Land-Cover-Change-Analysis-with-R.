@@ -58,7 +58,7 @@ library(ggplot2)    # ploting
 
 
 # Load data. Landsat data used for an area covering the greater Nairobi region downloaded from Google Earth Engine.
-dataFolder <- "c:/Users/admin/Downloads/Nairobi Landsat data/"
+dataFolder <- "E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/"
 
 landsat_2023 <- stack(paste0(dataFolder, 'NAIROBI_L8_2023.tif'))
 blue <- landsat_2023[[2]]
@@ -86,7 +86,7 @@ ndvi_img <- ggR(ndvi,  geom_raster = TRUE)+
                       axis.title.y=element_blank(),
                       axis.text.y=element_blank(),
                       axis.ticks.y=element_blank())+
-                ggtitle("Normalised Difference Vegetation Index.)") # Plot title 
+                ggtitle("Normalised Difference Vegetation Index.") # Plot title 
 ndvi_img
 
 
@@ -165,3 +165,6 @@ ndbi_img <- ggR(ndbi,  geom_raster = TRUE)+
 
 ndbi_img
 
+
+# REFRENCES.
+# 1. Tutorial link - https://zia207.github.io/geospatial-r-github.io/spectral-indices.html
