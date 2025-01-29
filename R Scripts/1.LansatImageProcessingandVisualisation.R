@@ -46,16 +46,19 @@ library(gridExtra)   # plot arrangement
  
 # Load raster data and study properties 
 # ---------------------------------------------------- 
+# The image contains all the landsat 8 bands stacked in one image, 
+# 1-14
 landsat_24 <- stack("E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/NAIROBI_L8_2023.tif")
 
 # Attributes of the whole image  
 landsat_24
  
-# Use a range to subset the bands
+# Use a range to subset the bands then create a stack
+# bands Blue, Green, Red, NIR, swir1, swir2
 selected_bands <- stack(landsat_24[[2:7]])
  
 # Attribute of subset bands 
- selected_bands
+selected_bands
  
 
 
@@ -69,7 +72,7 @@ plot(selected_bands)
 
 
  # Plot using ggplot 
- # 1.True colour image, RGB image. It replicates what the human eyes see.
+ # 1.True colour image, RGB image. It replicates what the human eyes see using 432 bands 
  # Healthy vegetation is green, urban areas are white and grey while water is dark or blue 
  naturalColour <-ggRGB(landsat_24, r=4, g=3, b=2, stretch = "lin")+
   theme(axis.title.x=element_blank(),
@@ -81,7 +84,7 @@ plot(selected_bands)
   ggtitle("Natural Color\n (R= Red, G= Green, B= Blue)")
 naturalColour
 
-# 2.Colour infrared image is used for analysing vegetation. Vegetation have higher reflectance 
+# 2.Colour infrared image(543) is used for analysing vegetation. Vegetation have higher reflectance 
  # for NIR light, vegetative areas appear red while water which absorbs this band appears dark 
  # as urban areas are white. 
  falseColourVeg <- ggRGB(landsat_24, r=5, g=4, b=3, stretch = "lin")+
@@ -138,8 +141,8 @@ The other bands can be "sharpened" using this band resulting to better quality i
 this will use panSharpen() function in RSToolbox package on three channel RGB images.
 '''
  # Load data 
-landsat_2022 <- stack("c:/Users/admin/Downloads/Nairobi Landsat data/Landsat8_2022.tif") 
- panBand_2022 <- raster("c:/Users/admin/Downloads/Nairobi Landsat data/Landsat8_Panchromatic_2022.tif")
+landsat_2022 <- stack("E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/Landsat8_2022.tif") 
+ panBand_2022 <- raster("E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/Landsat8_Panchromatic_2022.tif")
 
  landsat_2022
  panBand_2022
@@ -182,4 +185,5 @@ pansharpened
  
  
  
- 
+#  REERENCES
+#  1. Landsat isualisation - https://zia207.github.io/geospatial-r-github.io/landsat-8-image-processing.html
