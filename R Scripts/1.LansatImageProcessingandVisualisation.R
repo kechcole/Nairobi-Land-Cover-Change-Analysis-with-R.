@@ -128,6 +128,30 @@ falseColourUrb
 agric
 
  
+
+#  Healthy vegetation
+healthyVeg <- ggRGB(landsat_24, r=5, g=6, b=2, stretch = "lin")+
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank())+
+      ggtitle("Healthy Vegetation \n (R= NIR, G= SWIR1,  B= Green)")
+healthyVeg
+ 
+#  Land and water 
+landWater <- ggRGB(landsat_24, r=5, g=6, b=4, stretch = "lin")+
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank())+
+      ggtitle("Land and Water \n (R= NIR, G= SWIR1,  B= Red)")
+ landWater
+ 
+ 
  # Plot all data together 
 grid.arrange(naturalColour, falseColourVeg, falseColourUrb, agric, nrow = 1)
 
