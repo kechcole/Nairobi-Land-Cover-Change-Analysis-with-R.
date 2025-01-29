@@ -1,5 +1,5 @@
 
-library(conflicted)
+# library(conflicted)
 # library(rgdal)       # spatial data processing
 library(raster)      # raster processing
 library(plyr)        # data manipulation 
@@ -7,21 +7,25 @@ library(dplyr)       # data manipulation
 library(RStoolbox)   # ploting spatial data 
 library(RColorBrewer)# color
 library(ggplot2)     # ploting
-library(sp)          # spatial data
+# library(sp)          # spatial data
 library(sf)          # spatial data
 
 library(gridExtra)
-library(tidyverse)   # data 
+library(tidyverse)   # data MANIPULATION
+
+update.packages("sf")
+update.packages("tidyverse")
+install.packages("tidyverse")
 
 
 # Load data. Landsat data used for an area covering the greater Nairobi region downloaded from Google Earth Engine.
-dataFolder <- "c:/Users/admin/Downloads/Nairobi Landsat data/"
+dataFolder <- "E:/DISK E PETER/flux files/New folder/Nairobi Landsat data/"
 
 # Load raster data 
 landsat_24 <- stack(paste0(dataFolder, 'NAIROBI_L8_2023.tif'))
 crs(landsat_24)
 
-# Subset bands and plot 
+# Subset bands(BLUE, GREEN, RED, NIR,SWIR1,SWIR2) and plot 
 selected_bands <- stack(landsat_24[[2:7]])
 plot(selected_bands)
 
@@ -31,7 +35,8 @@ target_crs <- CRS("+init=EPSG:32337")
 
 # Step 3: Reproject the raster
 landsat_rpUTM <- projectRaster(selected_bands, crs = target_crs)
-plot(landsat_rpUTM)
+plot(landsat_rpUTM, main = " Raster Bands Reprojected To UTM Images.")
+
 
 
 # Step 4. Load vector data and reproject to same CRS as raster 
@@ -54,7 +59,7 @@ attribute <- poly_rpUTM$Class_Name
 
 # Plot
 plot(poly_rpUTM["Class_Name"], col = terrain.colors(length(unique(attribute))), 
-     main = "Digitized Areas Colored by Land Type.")
+     main = "Digitized Areas Colored by Land Type.", legend=TRUE)
 
 # Add a legend
 legend("bottomright", legend = unique(attribute), 
@@ -70,11 +75,15 @@ legend("bottomright", legend = unique(attribute),
 extent <- extent(selected_bands)
 extent
 
+# Polygon extent
+extent <- extent(poly_rpUTM)
+extent
+
 # Get projection of polygon to be used in rasterisation 
 crs = st_crs(poly_rpUTM)$proj4string
 crs
 
-# Create a blank raster (define resolution of 2.5m  and extent)
+# Create a blank raster (define resolution of 2.5m and extent)
 # Define the raster resolution (in the units of the coordinate system)
 rast_template <- raster(extent, resolution=2.5, 
         crs = "+proj=utm +zone=37 +south +ellps=WGS72 +datum=WGS84 +units=m +no_defs")
@@ -87,7 +96,17 @@ extent(rast_template) <- extent(poly_rpUTM)
 rp <- rasterize(poly_rpUTM, rast_template, 'Class_ID')
 
 # Plot 
-plot(rp, main="Ground truth data")
+plot(rp, main="Rasterized Ground Truth Data")
+
+# Convert raster to data.frame and rename colum to “layer”" to Class_ID
+rp.df <- as.data.frame(rasterToPoints(rp))
+ colnames(rp.df)[3] <- 'Class_ID'
+
+#  Create a Spatial point Data frame
+ xy <- rp.df[,c(1,2)]
+ point.SPDF <- SpatialPointsDataFrame(coords = xy,
+                                 data=rp.df,
+                                 proj4string = CRS("+proj=utm +zone=37 +south +ellps=WGS72 +datum=WGS84 +units=m +no_defs"))
 
 
 
